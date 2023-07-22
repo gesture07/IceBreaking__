@@ -8,15 +8,18 @@ public class PhotonSever : MonoBehaviourPunCallbacks
 {
     void Start()
     {
-        Screen.SetResolution(960, 600, false); // PC ½ÇÇà ½Ã ÇØ»óµµ ¼³Á¤
-        PhotonNetwork.ConnectUsingSettings(); // Æ÷Åæ ¿¬°á¼³Á¤
+        Screen.SetResolution(960, 600, false); // PC
+        PhotonNetwork.ConnectUsingSettings(); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½á¼³ï¿½ï¿½
     }
 
-    public override void OnConnectedToMaster()
-    {
-        RoomOptions options = new RoomOptions(); // ¹æ¿É¼Ç¼³Á¤
-        options.MaxPlayers = 5; // ÃÖ´ëÀÎ¿ø ¼³Á¤
-        PhotonNetwork.JoinOrCreateRoom("Room1", options, null); // ¹æÀÌ ÀÖÀ¸¸é ÀÔÀåÇÏ°í 
-                                                                // ¾ø´Ù¸é ¹æÀ» ¸¸µé°í ÀÔÀåÇÕ´Ï´Ù.
-    }
+    //public override void OnConnectedToMaster()
+    //{
+      //  RoomOptions options = new RoomOptions(); // ï¿½ï¿½É¼Ç¼ï¿½ï¿½ï¿½
+       // options.MaxPlayers = 5; // ï¿½Ö´ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+       // PhotonNetwork.JoinOrCreateRoom("Room1", options, null); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ 
+       //                                                         // ï¿½ï¿½ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+   // }
+   public override void OnConnectedToMaster()=> PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6}, null);
+
+   public override void OnJoinedRoom() {}
 }
