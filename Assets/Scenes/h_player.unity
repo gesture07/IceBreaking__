@@ -409,6 +409,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: player
       objectReference: {fileID: 0}
+    - target: {fileID: 3929666690321295266, guid: 80bf7d73a4d4b674d9defcf790caa0be, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3929666690321295288, guid: 80bf7d73a4d4b674d9defcf790caa0be, type: 3}
       propertyPath: sceneViewId
       value: 1

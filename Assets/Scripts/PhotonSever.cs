@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
+
 public class PhotonSever : MonoBehaviourPunCallbacks
 {
     void Start()
@@ -19,7 +20,13 @@ public class PhotonSever : MonoBehaviourPunCallbacks
        // PhotonNetwork.JoinOrCreateRoom("Room1", options, null); // ���� ������ �����ϰ� 
        //                                                         // ���ٸ� ���� ����� �����մϴ�.
    // }
-   public override void OnConnectedToMaster()=> PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6}, null);
+   public override void OnConnectedToMaster() => PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6}, null);
 
-   public override void OnJoinedRoom() {}
+   public override void OnJoinedRoom() {
+
+    PhotonNetwork.Instantiate("Player",Vector3.zero, Quaternion.identity);//프리팹 이름, 백터값, 회전값
+
+   }
+
+
 }
