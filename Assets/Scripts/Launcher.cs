@@ -1,11 +1,19 @@
 
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;//콜백으로 바꾸면서 생김
 
 namespace Com.MyCompany.MyGame{
-    public class Launcher : MonoBehaviour
+    public class Launcher : MonoBehaviourPunCallbacks//pun콜백 구현해보기
+    //public class Launcher : MonoBehaviour
     {
         #region Private Serializable Fields
+
+        [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
+        [SerializeField]
+        //룸에 참여할 수 있는 최대 플레이어 수. 방이 꽉 차면 새로운 방
+        private byte maxPlayersPerRoom = 4;
+       
 
         #endregion
 
@@ -54,6 +62,36 @@ namespace Com.MyCompany.MyGame{
 
         }
     #endregion
+
+    //씬을 실행 시키면 PUN 접속에 성공하여 기존의 룸에 참여를 시도하거나 새로 룸을 생성하고 생성된 그 룸에 참여.
+    #region MonoBehaviourPunCallbacks Callbacks
     
+    public override void OnConnectedToMaster(){
+        Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+        // 잠재적으로 존재하는 방이 있으면 가입, 그렇지 않으면 OnJoin Random Failed()로 다시 호출됩니다
+        PhotonNetwork.JoinRandomRoom();
+    
+    }
+    
+   public override void OnDisconnected(DisconnectCause cause)
+    {
+    Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+    }
+    //룸의 무작위 입장이 실패->통지를 받게 되며 룸을 실제로 생성해야 함.
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+    Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+
+    // #중요: 랜덤 방에 입장하는데 실패->새로운 방을 만들자// 위에 설정된 맥스 플레이어 수만큼
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
+    }
+    //성공적으로 룸에 참가
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+    }
+
+    #endregion
+
     }
 }
