@@ -19,6 +19,10 @@ namespace Com.MyCompany.MyGame{
         void Awake(){
             //중요//마스터 클라이언트의 LoadLevel()과 동일한 룸에 있는 모든 클라이언트의 LoadLevel이 자동으로 동기화.
             PhotonNetwork.AutomaticallySyncScene = true;
+            //플레이어 수에 따라 크기가 변경되는 경기장.
+            //로드된 씬은 연결하고 있는 모든 플레이어들이 동일.
+            //위의 값이 true 일 때, masterclient는 PhotonNetwork.LoadLevel()을 호출 할 수 있고 
+            //모든 연결된 플레이어들은 동일한 레벨을 자동적으로 로드
 
         }
         
@@ -42,7 +46,9 @@ namespace Com.MyCompany.MyGame{
             else{
                 //중요. Photon Online Server에 연결.
                 PhotonNetwork.GameVersion = gameVersion;
+                //포튼 클라우드에 연결 되는 시작 시점
                 PhotonNetwork.ConnectUsingSettings();
+                
             
             }
 
