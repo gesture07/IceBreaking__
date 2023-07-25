@@ -3,7 +3,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;//콜백으로 바꾸면서 생김
 
-namespace Com.MyCompany.MyGame{
+namespace Com.MyCompany.HRGame{
     public class Launcher : MonoBehaviourPunCallbacks//pun콜백 구현해보기
     //public class Launcher : MonoBehaviour
     {
@@ -36,7 +36,7 @@ namespace Com.MyCompany.MyGame{
         
         void Start()
         {
-            Connect();//커넥트 함수 호출
+           // Connect();//커넥트 함수 호출//2.로비 uI 에서 제거->플레이버튼을 누르기 전까지는 커넥트 돠지 않는다.
             //이미 연결된 경우 랜덤 룸에 가입하려고 시도
             //아직 연결되지 않은 경우 Phonton Cloud Network에 이 응용 프로그램 인스턴스 연결
 
