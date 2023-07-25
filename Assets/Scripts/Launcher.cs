@@ -21,6 +21,14 @@ namespace Com.MyCompany.HRGame{
         //게임 버전을 나타냄 //이미 출시되어 프로젝트에서 큰 변경사항있기 전까지는 "1"  
         string gameVersion = "1"; 
         #endregion
+        #region Pubilc Fields
+        [Tooltip("The Ui Panel to let the user enter name, connect and play")]
+        [SerializeField]
+        private GameObject controlPanel;
+        [Tooltip("The UI Label to inform the user that the connection is in progress")]
+        [SerializeField]
+        private GameObject progressLabel;
+        #endregion
         //MonoBehaviour은 초기 초가화 단계에서 유니티에 의해 게임 오브젝트를 호출한다.
         #region MonoBehaviour CallBacks
 
@@ -36,6 +44,8 @@ namespace Com.MyCompany.HRGame{
         
         void Start()
         {
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
            // Connect();//커넥트 함수 호출//2.로비 uI 에서 제거->플레이버튼을 누르기 전까지는 커넥트 돠지 않는다.
             //이미 연결된 경우 랜덤 룸에 가입하려고 시도
             //아직 연결되지 않은 경우 Phonton Cloud Network에 이 응용 프로그램 인스턴스 연결
@@ -44,6 +54,8 @@ namespace Com.MyCompany.HRGame{
         
         public void Connect(){
 
+            progressLabel.SetActive(true);
+            controlPanel.SetActive(false);
             //연결되어 있는지 확인하고, 연결되어 있으면 참여하고. 그렇지 않으면 서버에 연결을 시작.
             if(PhotonNetwork.IsConnected){
                 
@@ -75,12 +87,14 @@ namespace Com.MyCompany.HRGame{
     
    public override void OnDisconnected(DisconnectCause cause)
     {
-    Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+        progressLabel.SetActive(false);
+        controlPanel.SetActive(true);
+        Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
     }
     //룸의 무작위 입장이 실패->통지를 받게 되며 룸을 실제로 생성해야 함.
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-    Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+        Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
 
     // #중요: 랜덤 방에 입장하는데 실패->새로운 방을 만들자// 위에 설정된 맥스 플레이어 수만큼
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });

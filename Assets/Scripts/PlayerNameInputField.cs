@@ -43,10 +43,7 @@ namespace Com.MyCompany.HRGame{
         }
         #endregion
 
-        public void OnPlayerNameValueChanged(string value)
-        {
-            SetPlayerName(value);
-        }
+      
 
         //플레이어의 이름을 설정하고 이후 세션을 위해 플레이어 기본 설정에 저장
         #region Public Methods
