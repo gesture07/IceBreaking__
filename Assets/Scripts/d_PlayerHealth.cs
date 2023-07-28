@@ -28,7 +28,13 @@ public class d_PlayerHealth : MonoBehaviour
 
     void Awake()
     {
-
+        //Player게임 오브젝트에 붙어있는 animator컴포넌트를 찾아서 변수에 넣습니다
+        anim = GetComponent<Animator>();
+        //Player게임 오브젝트에 붙어있는 audioSource컴포너너트를 찾아서 변수에 넣습니다
+        playerAudio = GetComponent<AudioSource>();
+        //Player게임 오브젝트에 붙어있는 PlayerMovement컴포넌트를 찾아서 변수에 넣습니다
+        playerMovement = GetComponent<PlayerMovement>();
+        //현재 체력을 최대 체력으로 설정합니다.
     }
 
     // Start is called before the first frame update
