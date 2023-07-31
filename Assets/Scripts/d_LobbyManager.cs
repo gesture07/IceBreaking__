@@ -9,7 +9,10 @@ using UnityEngine.SceneManagement;
 public class d_LobbyManager : MonoBehaviourPunCallbacks
 {
     //게임 버전
-    private string gameVersion = "1";
+    private string gameVersion = "v0.1";
+    //플레이어 이름을 입력하는 UI항목 연결
+    public InputField userId;
+    
 
     //네트워크 정보를 표시할 텍스트
     public Text connectionOnfoText;
@@ -37,6 +40,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         joinButton.interactable = true;
         //접속 정보 표시
         connectionOnfoText.text = "온라인: 서버와 연결됨";
+        userId.text = GetUserId();
     }
 
     //마스터 서버 접속 실패 시 자동 실행
@@ -63,6 +67,13 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         {
             //룸 접속 실행
             connectionOnfoText.text = "룸에 접속...";
+
+            //로컬 플레이어의 이름을 설정
+            PhotonNetwork.LocalPlayer.NickName = userId.text;
+            //플레이어의 이름을 저장
+            PlayerPrefs.SetString("USER_ID", userId.text);
+            
+            //랜덤룸으로 입장
             PhotonNetwork.JoinRandomRoom();
         }
         else
@@ -91,5 +102,17 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         //모든 룸 참가자가 Main씬을 로드하게 함
         PhotonNetwork.LoadLevel("Game");
         // SceneManager.LoadScene("Game");
+    }
+
+    string GetUserId()
+    {
+        string userId = PlayerPrefs.GetString("USER_ID");
+
+        if(string.IsNullOrEmpty(userId))
+        {
+            userId = "USER_" + Random.Range(0, 999).ToString("000");
+        }
+
+        return userId;
     }
 }
