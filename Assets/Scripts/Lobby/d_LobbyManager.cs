@@ -12,6 +12,8 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     private string gameVersion = "v0.1";
     //플레이어 이름을 입력하는 UI항목 연결
     public InputField userId;
+    //룸 이름을 입력받을 UI항목 연결 변수
+    public InputField roomName;
     
 
     //네트워크 정보를 표시할 텍스트
@@ -27,6 +29,9 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
 
+        //룸 이름을 무작위로 설정
+        roomName.text = "ROOM_" + Random.Range(0, 999).ToString("000");
+        
         //룸 접속 버튼 잠시 비활성화
         joinButton.interactable = false;
         //접속 시도 중임을 텍스트로 표시
@@ -55,7 +60,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    //룸 접속 시도
+    //랜덤룸 접속 시도
     public void Connect()    
     {
         //중복 접속 시도를 막기 위해 접속 버튼 잠시 비활성화
@@ -72,6 +77,17 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
             PhotonNetwork.LocalPlayer.NickName = userId.text;
             //플레이어의 이름을 저장
             PlayerPrefs.SetString("USER_ID", userId.text);
+
+            //접속 과정에 대한 로그를 출력
+            Debug.Log("랜덤 룸접속 과정 :" + PhotonNetwork.NetworkClientState);
+            /*Connected, connectingToNameServer, ConnectedToNameServer, 
+            ConnectingToMasterserver, ConnectedToMaster, 
+            Joining, Joined, 
+            Leaving, Disconnecting, Disconnected
+            */
+
+            //씬을 이동하는 동안 포톤클라우드 서버로부터 네트워크 메시지 수신 중단
+            PhotonNetwork.IsMessageQueueRunning = false;
             
             //랜덤룸으로 입장
             PhotonNetwork.JoinRandomRoom();
@@ -83,6 +99,43 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
             //마스터 서버로의 재접속 시도
             PhotonNetwork.ConnectUsingSettings();
         }
+    }
+    
+    //방제작 버튼 클릭시
+    public void OnClickCreateRoom()
+    {
+        string _roomName = roomName.text;
+        //룸 이름이 없거나 null일 경우 룸 이름 지정
+        if(string.IsNullOrEmpty(roomName.text))
+        {
+            _roomName = "ROOM_" + Random.Range(0, 999).ToString("000");
+        }
+
+        //로컬 플레이어의 이름을 설정
+        PhotonNetwork.LocalPlayer.NickName = userId.text;
+        //플레이어의 이름을 저장
+        PlayerPrefs.SetString("USER_ID", userId.text);
+
+        //생성할 룸의 조건 설정
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.IsOpen = true;
+        roomOptions.IsVisible = true;
+        roomOptions.MaxPlayers = 10;
+
+        //지정한 조건에 맞는 룸 생성 함수
+        PhotonNetwork.CreateRoom(_roomName, roomOptions, null);
+    }
+
+    //룸 생성 실패할 때 호출되는 콜백함수
+    void OnPhotonCreateRoomFailed(object[] codeAndMsg)
+    {
+        Debug.Log("Create Room Failed = " + codeAndMsg[1]);
+        Debug.Log("제작 방 접속 과정 :" + PhotonNetwork.NetworkClientState);
+        /*Connected, connectingToNameServer, ConnectedToNameServer, 
+        ConnectingToMasterserver, ConnectedToMaster, 
+        Joining, Joined, 
+        Leaving, Disconnecting, Disconnected
+        */
     }
 
     //빈 방이 없어 랜덤 룸 참가에 실패한 경우 자동 실행
@@ -115,4 +168,5 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
 
         return userId;
     }
+
 }
