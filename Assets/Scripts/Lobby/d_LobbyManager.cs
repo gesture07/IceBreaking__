@@ -20,6 +20,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     public Text connectionOnfoText;
     //룸 접속 버튼
     public Button joinButton;
+    public Button roomCreateButton;
 
     //게임 실행과 동시에 마스터 서버 접속 시도
     void Start()
@@ -34,6 +35,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         
         //룸 접속 버튼 잠시 비활성화
         joinButton.interactable = false;
+        roomCreateButton.interactable = false;
         //접속 시도 중임을 텍스트로 표시
         connectionOnfoText.text = "마스터 서버에 접속 중...";
     }
@@ -43,6 +45,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     {
         //룸 접속 버튼 활성화
         joinButton.interactable = true;
+        roomCreateButton.interactable = true;
         //접속 정보 표시
         connectionOnfoText.text = "온라인: 서버와 연결됨";
         userId.text = GetUserId();
@@ -53,6 +56,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     {
         //룸 접속 버튼 비활성화
         joinButton.interactable = false;
+        roomCreateButton.interactable = false;
         //접속 정보 표시
         connectionOnfoText.text = "오프라인: 서버와 연결되지 않음. \n 접속 재시도 중...";
 
@@ -65,6 +69,7 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     {
         //중복 접속 시도를 막기 위해 접속 버튼 잠시 비활성화
         joinButton.interactable = false;
+        roomCreateButton.interactable = false;
         
 
         //마스터 서버에 접속 중이라면
@@ -104,26 +109,42 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     //방제작 버튼 클릭시
     public void OnClickCreateRoom()
     {
-        string _roomName = roomName.text;
-        //룸 이름이 없거나 null일 경우 룸 이름 지정
-        if(string.IsNullOrEmpty(roomName.text))
+        //중복 접속 시도를 막기 위해 접속 버튼 잠시 비활성화
+        roomCreateButton.interactable = false;
+        joinButton.interactable = false;
+        
+        //마스터 서버에 접속 중이라면
+        if(PhotonNetwork.IsConnected)
         {
-            _roomName = "ROOM_" + Random.Range(0, 999).ToString("000");
+            string _roomName = roomName.text;
+            //룸 이름이 없거나 null일 경우 룸 이름 지정
+            if(string.IsNullOrEmpty(roomName.text))
+            {
+                _roomName = "ROOM_" + Random.Range(0, 999).ToString("000");
+            }
+
+            //로컬 플레이어의 이름을 설정
+            PhotonNetwork.LocalPlayer.NickName = userId.text;
+            //플레이어의 이름을 저장
+            PlayerPrefs.SetString("USER_ID", userId.text);
+
+            //생성할 룸의 조건 설정
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.IsOpen = true;
+            roomOptions.IsVisible = true;
+            roomOptions.MaxPlayers = 10;
+
+            //지정한 조건에 맞는 룸 생성 함수
+            PhotonNetwork.CreateRoom(_roomName, roomOptions, null);
         }
-
-        //로컬 플레이어의 이름을 설정
-        PhotonNetwork.LocalPlayer.NickName = userId.text;
-        //플레이어의 이름을 저장
-        PlayerPrefs.SetString("USER_ID", userId.text);
-
-        //생성할 룸의 조건 설정
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsOpen = true;
-        roomOptions.IsVisible = true;
-        roomOptions.MaxPlayers = 10;
-
-        //지정한 조건에 맞는 룸 생성 함수
-        PhotonNetwork.CreateRoom(_roomName, roomOptions, null);
+        else
+        {
+            //마스터 서버에 접속 중이 아니라면 마스터 서버에 접속 시도
+            connectionOnfoText.text = "오프라인: 서버와 연결되지 않음. \n 재접속 시도 중...";
+            //마스터 서버로의 재접속 시도
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        
     }
 
     //룸 생성 실패할 때 호출되는 콜백함수
