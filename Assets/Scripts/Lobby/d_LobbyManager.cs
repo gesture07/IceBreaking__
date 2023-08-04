@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class d_LobbyManager : MonoBehaviourPunCallbacks
 {
+#region // 변수 선언
     //게임 버전
     private string gameVersion = "v0.1";
     //플레이어 이름을 입력하는 UI항목 연결
@@ -22,14 +23,27 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
     public Button joinButton;
     public Button roomCreateButton;
 
+    
+    //RoomItem이 child로 생성될 Parent객체
+    public GameObject scrollcontents;
+    //룸 목록만큼 생성될 RoomItem프리팹
+    public GameObject roomItem;
+#endregion
+
     //게임 실행과 동시에 마스터 서버 접속 시도
     void Start()
     {
         //접속에 필요한 정보(게임 버전) 설정
         PhotonNetwork.GameVersion = gameVersion;
-        //설정한 정보로 마스터 서버 접속 시도
-        PhotonNetwork.ConnectUsingSettings();
+        if(!PhotonNetwork.IsConnected)
+        {
+            //설정한 정보로 마스터 서버 접속 시도
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        //사용자 이름 설정
+        userId.text = GetUserId();
 
+        
         //룸 이름을 무작위로 설정
         roomName.text = "ROOM_" + Random.Range(0, 999).ToString("000");
         
@@ -38,8 +52,12 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         roomCreateButton.interactable = false;
         //접속 시도 중임을 텍스트로 표시
         connectionOnfoText.text = "마스터 서버에 접속 중...";
+
+        //방 목록을 얻습니다.
+        PhotonNetwork.JoinLobby();
     }
 
+#region //서버 접속 + 방 접속
     //마스터 서버 접속 성공 시 자동 실행
     public override void OnConnectedToMaster()
     {
@@ -189,5 +207,59 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
 
         return userId;
     }
+#endregion
 
+    //생성된 룸 목록 업데이트
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        Debug.Log("방 목록 업데이트");
+        
+        //룸 목록을 다시 받았을 때 갱신하기 위해 기존에 생성된 RoomItem을 삭제
+        foreach(GameObject obj in GameObject.FindGameObjectsWithTag("RoomItem"))
+        {
+            Destroy(obj);
+        }
+
+        //Grid Layout Group Component의 constraint Count 값을 증가시킬 변수
+        int rowCount = 0;
+        //스크롤 영역 초기화
+        scrollcontents.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+        
+        foreach (RoomInfo roomInfo in roomList)
+        {
+            //RoomItem 프리랩을 동적으로 생성
+            GameObject room = Instantiate(roomItem);
+            //생성한 RoomItem 프리랩의 Parent를 지정
+            room.transform.SetParent(scrollcontents.transform, false);
+
+            //생성한 RoomItem에 표시하기 위한 텍스트 정보 전달
+            d_RoomData roomData = room.GetComponent<d_RoomData>();
+            roomData.roomName = roomInfo.Name;
+            roomData.connectPlayer = roomInfo.PlayerCount;
+            roomData.MaxPlayers = roomInfo.MaxPlayers;
+            //텍스트 정보를 표시
+            roomData.DispRoomData();
+
+
+            //RoomItem의 Button component에 클릭 이벤트를 동적으로 연결
+            roomData.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate{onClickRoomItem(roomData.roomName);});
+            //Grid Layout Group component의 constraint count값을 증가
+            scrollcontents.GetComponent<GridLayoutGroup>().constraintCount = ++rowCount;
+            //스크롤 영역의 높이를 증가시킴
+            scrollcontents.GetComponent<RectTransform>().sizeDelta += new Vector2(0,20);
+        }
+    }
+
+
+    //RoomItem이 클릭되면 호출될 이벤트 연결 함수
+    void onClickRoomItem(string roomName)
+    {
+        //로컬 플레이어의 이름을 설정
+        PhotonNetwork.LocalPlayer.NickName = userId.text;
+        //플레이어의 이름을 저장
+        PlayerPrefs.SetString("USER_ID", userId.text);
+
+        //인자로 전달된 이름에 해당하는 룸으로 입장
+        PhotonNetwork.JoinRoom(roomName);
+    }
 }
