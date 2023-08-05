@@ -10,8 +10,18 @@ public class d_GameMgr : MonoBehaviour
     //접속된 플레이어 수를 표시할 Text UI 항목 변수
     public Text txtConnect;
 
+    //접속 로그를 표시할 Text UI 항목 변수
+    public Text txtLogMsg;
+    //RPC호출을 위한 PhotonView
+    private PhotonView pv;
+
+    public TextMesh userIdText;
+
     void Awake()
     {
+        //PhotonView component 할당
+        pv = GetComponent<PhotonView>();
+
         //포톤클라우드의 네트워크 메시지 수신을 다시 연결
         PhotonNetwork.IsMessageQueueRunning = true;
         //룸에 입장 후 기존 접속자 정보를 출력
@@ -22,7 +32,19 @@ public class d_GameMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //로그 메시지에 출력할 문자열 생성
+        string msg = "/n<color=#00ff00>[" + PhotonNetwork.LocalPlayer.NickName + "] Connectec</color>";
+        //RPC함수 호출
+        pv.RPC("LogMsg", RpcTarget.AllBuffered, msg);
+
+        // if(PlayerPrefs.HasKey("USER_ID"))
+        {
+            userIdText = gameObject.GetComponent<TextMesh>();
+            string userId = PlayerPrefs.GetString("USER_ID");
+
+            userIdText.text = userId;
+            Debug.Log(userIdText);
+        }
     }
 
     // Update is called once per frame
@@ -78,10 +100,25 @@ public class d_GameMgr : MonoBehaviour
     //             // ... 필요한 경우 다른 속성에 접근합니다.
 #endregion
 
-#region //Exit button
+#region //Exit button + Log message
+    
+    [PunRPC]
+    void LogMsg(string msg)
+    {
+        //로그 메시지 Text UI에 텍스트를 누적시켜 표시
+        txtLogMsg.text = txtLogMsg.text + msg;
     //룸 나가기 버튼 클릭 이벤트에 연결될 함수
+    }
+
     public void OnClickExitRoom()
     {
+        
+        //로그 메시지에 출력할 문자열 생성
+        string msg = "/n<color=#00ff00>[" + PhotonNetwork.LocalPlayer.NickName + "] Connectec</color>";
+        //RPC함수 호출
+        pv.RPC("LogMsg", RpcTarget.AllBuffered, msg);
+    
+
         //현재 룸을 빠져나가며 생성한 모든 네트워크 객체를 삭제
         PhotonNetwork.LeaveRoom();
     }
@@ -93,4 +130,12 @@ public class d_GameMgr : MonoBehaviour
         Application.LoadLevel("Lobby");
     }
     #endregion
+
+#region //
+   void CatchPlayer()
+   {
+        
+
+   } 
+#endregion
 }

@@ -8,12 +8,13 @@ using Photon.Realtime;
 public class d_DisplayUserId : MonoBehaviour
 {
 
-    public Text userId;
+    public TextMesh userId;
     private PhotonView pv = null;
 
     // Start is called before the first frame update
     void Start()
     {
+        userId = gameObject.GetComponent<TextMesh>();
         pv = GetComponent<PhotonView>();
         userId.text = pv.Owner.NickName;    
     }
