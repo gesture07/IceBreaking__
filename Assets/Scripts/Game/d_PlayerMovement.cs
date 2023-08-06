@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class d_PlayerMovement : MonoBehaviour
 {
     public float MoveSpeed = 0.3f;
 
@@ -21,19 +21,19 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayerInput()
     {
-        if(Input.GetKey(KeyCode.RightArrow))
+        if(Input.GetKey(KeyCode.D))
         {
             transform.position += new Vector3(MoveSpeed,0,0);
         }
-        else if(Input.GetKey(KeyCode.LeftArrow))
+        else if(Input.GetKey(KeyCode.A))
         {
             transform.position += new Vector3(-MoveSpeed,0,0);
         }
-        else if(Input.GetKey(KeyCode.UpArrow))
+        else if(Input.GetKey(KeyCode.W))
         {
             transform.position += new Vector3(0,0,MoveSpeed);
         }
-        else if(Input.GetKey(KeyCode.DownArrow))
+        else if(Input.GetKey(KeyCode.S))
         {
             transform.position += new Vector3(0,0,-MoveSpeed);
         }

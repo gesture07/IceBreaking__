@@ -17,6 +17,9 @@ public class d_GameMgr : MonoBehaviour
 
     public TextMesh userIdText;
 
+    //술래의 잡기 버튼
+    public Button PCatch;
+
     void Awake()
     {
         //PhotonView component 할당
@@ -32,6 +35,8 @@ public class d_GameMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //캐치버튼 비활성화
+        PCatch.interactable = false;
         //로그 메시지에 출력할 문자열 생성
         string msg = "/n<color=#00ff00>[" + PhotonNetwork.LocalPlayer.NickName + "] Connectec</color>";
         //RPC함수 호출
@@ -132,10 +137,14 @@ public class d_GameMgr : MonoBehaviour
     #endregion
 
 #region //
-   void CatchPlayer()
-   {
-        
 
-   } 
+    void OnCollisionEnter(Collision sul) 
+    {
+        if(sul.collider.tag == "sullae")
+        {
+            PCatch.interactable = true;
+        }
+    }
+    
 #endregion
 }
