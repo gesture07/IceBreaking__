@@ -37,7 +37,7 @@ public class d_PlayerMovement : MonoBehaviour
 
     void PlayerInput()
     {
-        if(Input.GetKey(KeyCode.w))
+        if(Input.GetKey(KeyCode.D))
         {
             transform.position += new Vector3(MoveSpeed,0,0);
         }
