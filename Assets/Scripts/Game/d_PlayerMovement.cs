@@ -4,31 +4,40 @@ using UnityEngine;
 
 public class d_PlayerMovement : MonoBehaviour
 {
+    private Transform tr;
+
     public float MoveSpeed = 0.3f;
 
     public bool ice = false;
 
+    public float turnSpeed = 80.0f;
+
     // Start is called before the first frame update
     void Start()
     {
+        tr = GetComponent<Transform>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
+        float r = Input.GetAxis("Mouse X");
+
         if(Input.GetKey(KeyCode.R)){
             ice = true;
         }
         if(!ice){
             PlayerInput();
         }
+
+        tr.Rotate(Vector3.up * turnSpeed * Time.deltaTime* r);
     
     }
 
     void PlayerInput()
     {
-        if(Input.GetKey(KeyCode.D))
+        if(Input.GetKey(KeyCode.w))
         {
             transform.position += new Vector3(MoveSpeed,0,0);
         }
