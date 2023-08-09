@@ -6,6 +6,8 @@ public class d_PlayerMovement : MonoBehaviour
 {
     public float MoveSpeed = 0.3f;
 
+    public bool ice = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,7 +17,12 @@ public class d_PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PlayerInput();
+        if(Input.GetKey(KeyCode.R)){
+            ice = true;
+        }
+        if(!ice){
+            PlayerInput();
+        }
     
     }
 
