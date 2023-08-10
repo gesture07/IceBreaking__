@@ -28,7 +28,7 @@ public class d_GameMgr : MonoBehaviour
         //포톤클라우드의 네트워크 메시지 수신을 다시 연결
         PhotonNetwork.IsMessageQueueRunning = true;
         //룸에 입장 후 기존 접속자 정보를 출력
-        GetConnectPlayerCount();
+       GetConnectPlayerCount();
         //룸의 입장한 상태에서 주인공 캐릭터를 생성
         CreatePlayer();
 
@@ -160,6 +160,7 @@ public class d_GameMgr : MonoBehaviour
                                     points[idx].position,
                                     points[idx].rotation,
                                     0);
+        Debug.Log("hi");
         
     }
 }
