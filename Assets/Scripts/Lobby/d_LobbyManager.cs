@@ -55,6 +55,8 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
 
         //방 목록을 얻습니다.
         PhotonNetwork.JoinLobby();
+
+       
     }
 
 #region //서버 접속 + 방 접속
@@ -263,4 +265,5 @@ public class d_LobbyManager : MonoBehaviourPunCallbacks
         //인자로 전달된 이름에 해당하는 룸으로 입장
         PhotonNetwork.JoinRoom(roomName);
     }
+   
 }
