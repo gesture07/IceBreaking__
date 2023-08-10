@@ -473,3 +473,4 @@ MonoBehaviour:
   MoveSpeed: 0.1
   turnSpeed: 80
   ice: 0
+  damping: 10

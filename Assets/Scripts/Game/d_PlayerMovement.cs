@@ -4,16 +4,16 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
-public class d_PlayerMovement : MonoBehaviour
+public class d_PlayerMovement : MonoBehaviourPunCallbacks,IPunObservable
 {
-    //컴포넌트 캐시처리를 위한 함수
+    //컴포넌트 캐시처리를 위한 변수
     private Transform tr;
     private new Camera camera;
 
     public float MoveSpeed = 0.3f;
     public float turnSpeed = 80.0f;
-
-     public bool ice = false;
+    //얼음 기능을 위한 변수
+    public bool ice = false;
     //PhotonView 컴포너트 캐시 처리를 위한 변수
     private PhotonView pv;
     //시네머신 가상 카메라를 저장할 변수
@@ -67,7 +67,25 @@ public class d_PlayerMovement : MonoBehaviour
                                                 receiveRot,
                                                 Time.deltaTime * damping);
         }
+        // 마우스 왼쪽 버튼(0)이 눌려질 때의 조건을 검사
+         if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            //플레이어가 클릭한 화면 위치를 기준으로 Ray를 생성
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            // 생성한 Ray를 발사하고, 어떤 객체와 부딪혔는지 검사합니다. 부딪힌 객체는 hit 변수에 저장
+            if (Physics.Raycast(ray, out hit))
+            {
+                //Ray가 부딪힌 객체가 "Player"라는 태그니?
+                if (hit.transform.gameObject.CompareTag("Player"))
+                {
+                    // Photon 라이브러리를 사용하여 현재 클라이언트에서 다른 클라이언트들에게 "ChangeState"라는 함수를 호출하라는 요청을 보냅니다.
+                    // 이 때, 터치한 플레이어의 PhotonView ID도 함께 보내서 어느 플레이어의 상태를 변경해야 하는지 알립니다.
+                    photonView.RPC("ChangeState", RpcTarget.Others, hit.transform.gameObject.GetComponent<PhotonView>().ViewID);
+                }
+            }     
     
+         }
     }
 
     void PlayerInput()
@@ -96,15 +114,25 @@ public class d_PlayerMovement : MonoBehaviour
         if(stream.IsWriting){
             stream.SendNext(tr.position);
             stream.SendNext(tr.rotation);
-            stream.SendNext(ice); // 로컬 플레이어의 ice 값을 전송
+            //stream.SendNext(ice); // 로컬 플레이어의 ice 값을 전송
             Debug.Log("OnPhotonSerializeView sendNext");
         }
         else
         {
             receivePos = (Vector3)stream.ReceiveNext();
             receiveRot = (Quaternion)stream.ReceiveNext();
-            ice = (bool)stream.ReceiveNext(); // 네트워크를 통해 수신된 ice 값을 저장
+            //ice = (bool)stream.ReceiveNext(); // 네트워크를 통해 수신된 ice 값을 저장
             Debug.Log("OnPhotonSerializeView ReceiveNext");
+        }
+    }
+
+    [PunRPC]
+    void ChangeState(int viewID)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null && ice)
+        {
+           ice = false;
         }
     }
    
