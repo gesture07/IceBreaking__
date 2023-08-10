@@ -160,7 +160,6 @@ public class d_GameMgr : MonoBehaviour
                                     points[idx].position,
                                     points[idx].rotation,
                                     0);
-        Debug.Log("hi");
         
     }
 }
