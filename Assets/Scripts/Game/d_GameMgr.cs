@@ -29,6 +29,8 @@ public class d_GameMgr : MonoBehaviour
         PhotonNetwork.IsMessageQueueRunning = true;
         //룸에 입장 후 기존 접속자 정보를 출력
         GetConnectPlayerCount();
+        //룸의 입장한 상태에서 주인공 캐릭터를 생성
+        CreatePlayer();
 
     }
 
@@ -113,6 +115,7 @@ public class d_GameMgr : MonoBehaviour
         //로그 메시지 Text UI에 텍스트를 누적시켜 표시
         txtLogMsg.text = txtLogMsg.text + msg;
     //룸 나가기 버튼 클릭 이벤트에 연결될 함수
+
     }
 
     public void OnClickExitRoom()
@@ -147,4 +150,15 @@ public class d_GameMgr : MonoBehaviour
     }
     
 #endregion
+    void CreatePlayer()
+    {
+        //출현 위치 정보를 배열에 저장
+        Transform[] points = GameObject.Find("SpawnPointGroup").GetComponentsInChildren<Transform>();
+        int idx = Random.Range(1,points.Length);
+
+        PhotonNetwork.Instantiate("Player",
+                                    points[idx].position,
+                                    points[idx].rotation,
+                                    0);
+    }
 }
