@@ -14,10 +14,6 @@ public class d_PlayerMovement : MonoBehaviourPunCallbacks,IPunObservable
     public float turnSpeed = 80.0f;
     //얼음 기능을 위한 변수
     public bool ice = false;
-    //PhotonView 컴포너트 캐시 처리를 위한 변수
-    private PhotonView pv;
-    //시네머신 가상 카메라를 저장할 변수
-    private CinemachineVirtualCamera virtualCamera;
     //수신된 위치와 회전값을 저장할 변수
     private Vector3 receivePos;
     private Quaternion receiveRot;
@@ -28,18 +24,7 @@ public class d_PlayerMovement : MonoBehaviourPunCallbacks,IPunObservable
     void Start()
     {
         tr = GetComponent<Transform>();
-        camera = Camera.main;
-
-        pv = GetComponent<PhotonView>();
-        virtualCamera = GameObject.FindObjectOfType<CinemachineVirtualCamera>();
-
-        //PhotonView가 자신의 것일 겻우 시네머신 가상카메라를 연결
-        if(pv.IsMine)
-        {
-            virtualCamera.Follow = transform;
-            virtualCamera.LookAt = transform;
-        }
-        
+    
     }
 
     // Update is called once per frame
@@ -53,7 +38,7 @@ public class d_PlayerMovement : MonoBehaviourPunCallbacks,IPunObservable
 
         tr.Rotate(Vector3.up * turnSpeed * Time.deltaTime* r);
         //자신이 생성한 네트워크 객체만 컨트롤
-        if(pv.IsMine&&!ice)
+        if(photonView.IsMine&&!ice)
         {
            PlayerInput();
         }
